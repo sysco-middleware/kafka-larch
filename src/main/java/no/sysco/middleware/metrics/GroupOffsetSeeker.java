@@ -85,11 +85,16 @@ class GroupOffsetSeeker implements AutoCloseable {
                 long currentOffset = offsetAndMetadata.offset();
 
                 Long endOffset = endOffsetsPerPartition.get(partition);
-                long lag = endOffset - currentOffset;
-                lagGauge.labels(groupId, partition.topic(), Integer.toString(partition.partition())).set(lag);
+                if(endOffset != null) {
+                    long lag = endOffset - currentOffset;
+                    lagGauge.labels(groupId, partition.topic(), Integer.toString(partition.partition())).set(lag);
 
-                logger.debug("group: {}, topic: {}, partition: {}, offset: {}, end offset: {},  lag: {}",
-                            groupId, partition.topic(), partition.partition(), currentOffset, endOffset, lag);
+                    logger.debug("group: {}, topic: {}, partition: {}, offset: {}, end offset: {},  lag: {}",
+                                 groupId, partition.topic(), partition.partition(), currentOffset, endOffset, lag);
+                } else {
+                    logger.warn("Missing END OFFSET for group: {}, topic: {}, partition: {}",groupId, partition.topic(), partition.partition());
+                }
+
             }
 
         } catch (InterruptedException | ExecutionException | TimeoutException e) {

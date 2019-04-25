@@ -6,7 +6,7 @@
     </appender>
 
 
-    <root level="DEBUG">
+    <root level="${LARCH_LOG_LEVEL:-INFO}">
       <appender-ref ref="consoleAppender" />
     </root>
 </configuration>
